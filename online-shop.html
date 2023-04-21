@@ -1,134 +1,62 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<!-- به فایل jQuery و فایل Bootstrap.css نیاز دارید -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
-<head>
-  <title>فروشگاه آنلاین</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.5.3/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdn.rtlcss.com/bootstrap/v4.5.3/js/bootstrap.min.js"></script>
-</head>
-
-<body>
-
-  <div class="container">
-    <div class="row">
-      <div class="col-md-8 mx-auto">
-        <h2 class="text-center my-4">فروشگاه آنلاین</h2>
-        <div class="card">
-          <div class="card-body">
-            <form>
-              <div class="form-group">
-                <label for="product_id">محصول:</label>
-                <select class="form-control" id="product_id">
-                  <option value="">یک محصول انتخاب کنید</option>
-                  <option value="1">محصول ۱</option>
-                  <option value="2">محصول ۲</option>
-                  <option value="3">محصول ۳</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="quantity">تعداد:</label>
-                <input type="number" class="form-control" id="quantity" placeholder="تعداد را وارد کنید" name="quantity">
-              </div>
-              <button type="button" class="btn btn-primary" onclick="addToCart()">افزودن به سبد خرید</button>
-            </form>
-          </div>
-        </div>
-        <div class="card mt-4">
-          <div class="card-body">
-            <h4 class="card-title">سبد خرید</h4>
-            <div id="cart_items"></div>
-            <button type="button" class="btn btn-success mt-2" onclick="checkout()">تسویه حساب</button>
-          </div>
-        </div>
-      </div>
+<!-- فرم خرید -->
+<form id="purchase-form">
+    <!-- فیلدهای فرم -->
+    <div class="form-group">
+        <label for="name">نام و نام خانوادگی:</label>
+        <input type="text" class="form-control" name="name" required>
     </div>
-  </div>
+    <div class="form-group">
+        <label for="email">ایمیل:</label>
+        <input type="email" class="form-control" name="email" required>
+    </div>
+    <div id="product-fields">
+        <div class="form-group product-field">
+            <label for="product-1">محصول 1:</label>
+            <input type="text" class="form-control" name="product-1" required>
+            <input type="number" class="form-control" name="quantity-1" min="1" max="10" value="1" required>
+            <button type="button" class="btn btn-danger remove-product">حذف</button>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary" id="add-product">افزودن محصول جدید</button>
+    <button type="submit" class="btn btn-success">تایید خرید</button>
+</form>
 
-  <script>
-    // تابع برای افزودن محصول به سبد خرید
-    function addToCart() {
-      // خواندن اطلاعات محصول از فرم
-      var product_id = $("#product_id").val();
-      var quantity = $("#quantity").val();
-      // خواندن محتوای cookie
-      var cart_items = getCookie("cart_items");
-      // تبدیل محتوای cookie به آرایه اگر خالی بود
-      if (cart_items == "") {
-        cart_items = [];
-      } else {
-        cart_items = JSON.parse(cart_items);
-      }
-      // افزودن محصول جدید به آرایه
-      cart_items.push({
-        "product_id": product_id,
-        "quantity": quantity
-      });
-      // ذخیره آرایه به صورت cookie
-      setCookie("cart_items", JSON.stringify(cart_items), 1);
-      // نمایش سبد خرید به روز شده
-      showCart();
-    }
-
-    // تابع برای نمایش سبد خرید
-    function showCart() {
-      // خواندن محتوای cookie
-      var cart_items = getCookie("cart_items");
-      // تبدیل محتوای cookie به آرایه اگر خالی بود
-      if (cart_items == "") {
-        cart_items = [];
-      } else {
-        cart_items = JSON.parse(cart_items);
-      }
-      // ساخت HTML برای نمایش سبد خرید
-      var html = "";
-      for (var i = 0; i < cart_items.length; i++) {
-        html += "<p>محصول: " + cart_items[i].product_id + " - تعداد: " + cart_items[i].quantity + "</p>";
-      }
-      // نمایش HTML در المان مناسب
-      $("#cart_items").html(html);
-    }
-
-    // تابع برای تسویه حساب
-    function checkout() {
-      // اینجا می‌توانید کدی برای تسویه حساب نوشته و سبد خرید را پاک کنید
-      setCookie("cart_items", "", 0);
-      // نمایش سبد خرید خالی
-      showCart();
-      alert("سفارش شما با موفقیت ثبت شد.");
-    }
-
-    // تابع برای ذخیره داده به صورت cookie
-    function setCookie(name, value, days) {
-      var expires = "";
-      if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-      }
-      document.cookie = name + "=" + (value || "") + expires + "; path=/";
-    }
-
-    // تابع برای خواندن داده از cookie
-    function getCookie(name) {
-      var nameEQ = name + "=";
-      var ca = document.cookie.split(';');
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-      }
-      return "";
-    }
-
-    // نمایش سبد خرید هنگام لود صفحه
-    $(document).ready(function() {
-      showCart();
+<!-- کد جاوا اسکریپت -->
+<script>
+$(document).ready(function() {
+    // افزودن فیلد جدید برای محصول
+    $('#add-product').click(function() {
+        var product_index = $('.product-field').length + 1;
+        var new_field = '<div class="form-group product-field"><label for="product-' + product_index + '">محصول ' + product_index + ':</label><input type="text" class="form-control" name="product-' + product_index + '" required><input type="number" class="form-control" name="quantity-' + product_index + '" min="1" max="10" value="1" required><button type="button" class="btn btn-danger remove-product">حذف</button></div>';
+        $(new_field).appendTo('#product-fields');
     });
-  </script>
 
-</body>
+    // حذف فیلد محصول
+    $(document).on('click', '.remove-product', function() {
+        $(this).closest('.product-field').remove();
+    });
 
-</html>
+    // ارسال فرم به سمت PHP
+    $('#purchase-form').submit(function(event) {
+        event.preventDefault(); // جلوگیری از ارسال فرم به صورت پیش‌فرض
+        var form_data = $(this).serialize(); // تبدیل فرم به دیتا ارسالی
+        $.ajax({
+            type: 'POST',
+            url: 'purchase.php',
+            data: form_data,
+            success: function(response) {
+                // نمایش پیغام موفقیت‌آمیز در قالب یک alert
+                $('#alert-container').html('<div class="alert alert-success" role="alert">خرید با موفقیت انجام شد</div>');
+            },
+            error: function(xhr, status, error) {
+                // نمایش پیغام خطا در صورت وجود
+                console.log(xhr.responseText);
+            }
+        });
+    });
+});
+</script>
